@@ -1,11 +1,11 @@
 import { FC } from "react";
-import { TextSize } from "../constants/design";
+import { GeneralSize } from "../constants/design";
 
 interface TextProps {
-  size?: TextSize;
+  size?: GeneralSize;
 }
 
-const Text: FC<TextProps> = ({ children, size = TextSize.medium }) => {
+const Text: FC<TextProps> = ({ children, size = GeneralSize.medium }) => {
   return <span>{children}</span>;
 };
 

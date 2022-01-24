@@ -1,4 +1,4 @@
-export enum TextSize {
+export enum GeneralSize {
   small,
   medium,
   large,

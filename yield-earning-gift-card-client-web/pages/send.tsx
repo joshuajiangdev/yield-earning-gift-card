@@ -1,7 +1,18 @@
 import type { NextPage } from "next";
 import styled from "styled-components";
+import { LCDClient, Coin } from "@terra-money/terra.js";
+import { useEffect, useState } from "react";
 
 const SendPage: NextPage = () => {
+  const [terra, setTerra] = useState<LCDClient>(
+    new LCDClient({
+      URL: "https://bombay-lcd.terra.dev",
+      chainID: "bombay-12",
+    })
+  );
+
+  useEffect(() => {});
+
   const Title = styled.h1`
     font-size: 1.5em;
     text-align: center;
