@@ -11,3 +11,14 @@ export const getCount = async (
 
   return lcd.wasm.contractQuery(contractAdress(wallet), { get_count: {} });
 };
+
+
+export const getGreeting = async (
+  wallet?: ConnectedWallet
+): Promise<{ count: number }> => {
+  if (!wallet) {
+    throw new Error("No wallet connected");
+  }
+
+  return lcd.wasm.contractQuery(contractAdress(wallet), { get_greeting: {} });
+};
