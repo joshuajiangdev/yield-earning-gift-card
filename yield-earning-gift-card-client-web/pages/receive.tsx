@@ -1,5 +1,8 @@
+import { useConnectedWallet } from "@terra-money/wallet-provider";
 import type { NextPage } from "next";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import * as query from "../src/contract/query";
 
 const ReceivePage: NextPage = () => {
   const Title = styled.h1`
@@ -14,10 +17,25 @@ const ReceivePage: NextPage = () => {
     background: papayawhip;
   `;
 
+  const connectedWallet = useConnectedWallet();
+  console.log("connected wallet: ", connectedWallet);
+  const [msg, setMessage] = useState<string>();
+  const [updating, setUpdating] = useState(true);
+
+  useEffect(() => {
+    const prefetch = async () => {
+      if (connectedWallet) {
+        setMessage((await query.getGreeting(connectedWallet)).greeting);
+      }
+      setUpdating(false);
+    };
+    prefetch();
+  }, [connectedWallet]);
+
   // Use Title and Wrapper like any other React component – except they're styled!
   return (
     <Wrapper>
-      <Title>Recieve page</Title>
+      <Title>{msg}</Title>
     </Wrapper>
   );
 };

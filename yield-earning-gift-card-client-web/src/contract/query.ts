@@ -15,7 +15,7 @@ export const getCount = async (
 
 export const getGreeting = async (
   wallet?: ConnectedWallet
-): Promise<{ count: number }> => {
+): Promise<{ greeting: string }> => {
   if (!wallet) {
     throw new Error("No wallet connected");
   }
