@@ -1,9 +1,15 @@
 {
   "testnet": {
     "counter": {
+<<<<<<< HEAD
       "codeId": "36865",
       "contractAddresses": {
         "default": "terra1w8rfwsdh47dtn47ckm9yyfa08zx2mlnezrnyjt"
+=======
+      "codeId": "36859",
+      "contractAddresses": {
+        "default": "terra1wqhpp6qhu8de096636dlnkkvnww3jwuf9ev2wj"
+>>>>>>> d15d2bb9a3c47cacccb7f0e54bc012f445c0c511
       }
     }
   }
