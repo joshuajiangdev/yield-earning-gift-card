@@ -4,9 +4,19 @@ use serde::{Deserialize, Serialize};
 use cosmwasm_std::Addr;
 use cw_storage_plus::Item;
 
+use cosmwasm_bignumber::Uint256;
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct GiftDetail {
+    pub receiver: Addr,
+    pub sender: Addr,
+    pub amount: Uint256,
+    pub msg: String,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct State {
-    pub count: i32,
+    pub giftcards: Vec<GiftDetail>,
     pub owner: Addr,
 }
 
