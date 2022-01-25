@@ -4,7 +4,9 @@ use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response,
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{CountResponse, GreetingResponse, ExecuteMsg, InstantiateMsg, QueryMsg, MigrateMsg};
+use crate::msg::{
+    CountResponse, ExecuteMsg, GreetingResponse, InstantiateMsg, MigrateMsg, QueryMsg,
+};
 use crate::state::{State, STATE};
 
 // version info for migration info
@@ -46,6 +48,7 @@ pub fn execute(
     match msg {
         ExecuteMsg::Increment {} => try_increment(deps),
         ExecuteMsg::Reset { count } => try_reset(deps, info, count),
+        ExecuteMsg::Deposit { amount } => try_deposit(deps, info, amount),
     }
 }
 
@@ -68,11 +71,26 @@ pub fn try_reset(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Respons
     Ok(Response::new().add_attribute("method", "reset"))
 }
 
+pub fn try_deposit(
+    deps: DepsMut,
+    info: MessageInfo,
+    amount: i32,
+) -> Result<Response, ContractError> {
+    // TODO: deposit funds into anchor for a given wallet
+
+    // NOTE: you can add any key/value pairs to the response as a way of logging
+    // print something out first - the amount to be deposited and the sender
+    Ok(Response::new()
+        .add_attribute("method", "try_deposit")
+        .add_attribute("owner", info.sender) // owner is the address of the sender
+        .add_attribute("amount", amount.to_string()))
+}
+
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
         QueryMsg::GetCount {} => to_binary(&query_count(deps)?),
-        QueryMsg::GetGreeting {} => to_binary(&query_greeting()?)
+        QueryMsg::GetGreeting {} => to_binary(&query_greeting()?),
     }
 }
 
@@ -81,8 +99,10 @@ fn query_count(deps: Deps) -> StdResult<CountResponse> {
     Ok(CountResponse { count: state.count })
 }
 
-fn query_greeting() -> StdResult<GreetingResponse>{
-    Ok(GreetingResponse { greeting: String::from("hello miami")})
+fn query_greeting() -> StdResult<GreetingResponse> {
+    Ok(GreetingResponse {
+        greeting: String::from("hello miami"),
+    })
 }
 
 #[cfg(test)]

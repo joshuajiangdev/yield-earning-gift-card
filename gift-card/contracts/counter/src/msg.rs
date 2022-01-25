@@ -15,6 +15,7 @@ pub struct InstantiateMsg {
 pub enum ExecuteMsg {
     Increment {},
     Reset { count: i32 },
+    Deposit { amount: i32 },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -23,7 +24,7 @@ pub enum QueryMsg {
     // GetCount returns the current count as a json-encoded number
     GetCount {},
     // GetGreeting returns a dummy greeting
-    GetGreeting {}
+    GetGreeting {},
 }
 
 // We define a custom struct for each query response
@@ -36,5 +37,3 @@ pub struct CountResponse {
 pub struct GreetingResponse {
     pub greeting: String,
 }
-
-
