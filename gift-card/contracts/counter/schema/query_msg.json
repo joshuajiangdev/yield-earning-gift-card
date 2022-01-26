@@ -5,10 +5,32 @@
     {
       "type": "object",
       "required": [
-        "get_count"
+        "get_gift_detail"
       ],
       "properties": {
-        "get_count": {
+        "get_gift_detail": {
+          "type": "object",
+          "required": [
+            "gift_id"
+          ],
+          "properties": {
+            "gift_id": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "get_greeting"
+      ],
+      "properties": {
+        "get_greeting": {
           "type": "object"
         }
       },
