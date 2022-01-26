@@ -12,6 +12,7 @@ pub struct GiftDetail {
     pub sender: Addr,
     pub amount: Uint256,
     pub msg: String,
+    pub is_claimed: bool,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

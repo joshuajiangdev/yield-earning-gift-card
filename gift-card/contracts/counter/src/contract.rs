@@ -73,8 +73,6 @@ pub fn try_send_gift(
             receiver: receiver,
             amount: amount,
             msg: msg,
-            // created_at: current_time.clone(),
-            // claimed_at: Option::None,
         };
 
         state.giftcards.push(gift_card);
@@ -90,11 +88,7 @@ pub fn try_send_gift(
         ))
 }
 
-pub fn try_deposit(
-    deps: DepsMut,
-    info: MessageInfo,
-    amount: i32,
-) -> Result<Response, ContractError> {
+pub fn try_deposit(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractError> {
     // deposit funds into anchor for a given wallet
     let config = config::read(deps.storage).unwrap();
 
@@ -118,7 +112,7 @@ pub fn try_deposit(
         )?)
         .add_attribute("method", "try_deposit")
         .add_attribute("owner", info.sender) // owner is the address of the sender
-        .add_attribute("amount", amount.to_string()))
+        .add_attribute("amount received", received.to_string()))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
