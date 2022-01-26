@@ -13,7 +13,6 @@ pub struct InstantiateMsg {}
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
-    Deposit { amount: i32 },
     SendGift { receiver: Addr, gift_msg: String },
 }
 
@@ -30,9 +29,4 @@ pub struct GetGiftDetailResponse {
     pub amount: Uint256,
     pub msg: String,
     pub receiver: Addr,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct GreetingResponse {
-    pub greeting: String,
 }

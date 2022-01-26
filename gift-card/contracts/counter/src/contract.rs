@@ -56,26 +56,27 @@ pub fn execute(
         .unwrap_or_else(Uint256::zero);
 
     match msg {
-        ExecuteMsg::Deposit { amount } => try_deposit(deps, info, amount),
         ExecuteMsg::SendGift { receiver, gift_msg } => {
-            try_send_gift(deps, info.sender, receiver, received, gift_msg)
+            try_send_gift(deps, info, receiver, received, gift_msg)
         }
     }
 }
 
 pub fn try_send_gift(
     deps: DepsMut,
-    sender: Addr,
+    info: MessageInfo,
     receiver: Addr,
     amount: Uint256,
     msg: String,
 ) -> Result<Response, ContractError> {
+    let sender = info.sender;
     STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
         let gift_card = GiftDetail {
-            sender: sender,
-            receiver: receiver,
-            amount: amount,
-            msg: msg,
+            sender,
+            receiver,
+            amount,
+            msg,
+            is_claimed: false,
         };
 
         state.giftcards.push(gift_card);
@@ -83,12 +84,21 @@ pub fn try_send_gift(
         Ok(state)
     })?;
 
+    // extract deposited funds
+    let funds_received: Uint256 = info
+        .funds
+        .iter()
+        .find(|c| c.denom == "uusd")
+        .map(|c| Uint256::from(c.amount))
+        .unwrap_or_else(Uint256::zero);
+
     Ok(Response::new()
         .add_attribute("method", "try_send_gift")
         .add_attribute(
             "gift_id",
             (STATE.load(deps.storage)?.giftcards.len() - 1).to_string(),
-        ))
+        )
+        .add_attribute("funds_received", funds_received))
 }
 
 pub fn try_deposit(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractError> {
