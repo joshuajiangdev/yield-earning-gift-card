@@ -1,17 +1,17 @@
 {
   "testnet": {
     "counter": {
-      "codeId": "36865",
+      "codeId": "37589",
       "contractAddresses": {
-        "default": "terra1w8rfwsdh47dtn47ckm9yyfa08zx2mlnezrnyjt"
+        "default": "terra19w3ufy6u3zl6hsrz5l6ge0plcmhhrnpjr4sjsx"
       }
     }
   },
   "localterra": {
     "counter": {
-      "codeId": "5",
+      "codeId": "8",
       "contractAddresses": {
-        "default": "terra1k0jntykt7e4g3y88ltc60czgjuqdy4c9ax8tx2"
+        "default": "terra15rrl3qjafxzlzguu5x29xh29pam35uet2q86vp"
       }
     }
   }

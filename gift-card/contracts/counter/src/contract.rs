@@ -3,11 +3,14 @@ use cosmwasm_std::entry_point;
 use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 use cw2::set_contract_version;
 
+use crate::anchor;
+use crate::config;
 use crate::error::ContractError;
 use crate::msg::{
     CountResponse, ExecuteMsg, GreetingResponse, InstantiateMsg, MigrateMsg, QueryMsg,
 };
 use crate::state::{State, STATE};
+use cosmwasm_bignumber::Uint256;
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:counter";
@@ -76,11 +79,27 @@ pub fn try_deposit(
     info: MessageInfo,
     amount: i32,
 ) -> Result<Response, ContractError> {
-    // TODO: deposit funds into anchor for a given wallet
+    // deposit funds into anchor for a given wallet
+    let config = config::read(deps.storage).unwrap();
 
+    // check deposit
+    let received: Uint256 = info
+        .funds
+        .iter()
+        .find(|c| c.denom == config.stable_denom)
+        .map(|c| Uint256::from(c.amount))
+        .unwrap_or_else(Uint256::zero);
+
+    let market_address = "terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal";
     // NOTE: you can add any key/value pairs to the response as a way of logging
     // print something out first - the amount to be deposited and the sender
     Ok(Response::new()
+        .add_messages(anchor::deposit_stable_msg(
+            deps.as_ref(),
+            &deps.api.addr_canonicalize(market_address).unwrap(),
+            "uusd",
+            received.into(),
+        )?)
         .add_attribute("method", "try_deposit")
         .add_attribute("owner", info.sender) // owner is the address of the sender
         .add_attribute("amount", amount.to_string()))
