@@ -1,62 +1,96 @@
 import type { NextPage } from "next";
 import styled from "styled-components";
-import { LCDClient, Coin } from "@terra-money/terra.js";
-import { useEffect, useState } from "react";
+import { FormEvent, FormEventHandler, useEffect, useState } from "react";
 import * as execute from "../src/contract/execute";
 import * as query from "../src/contract/query";
 import { useConnectedWallet, useWallet } from "@terra-money/wallet-provider";
+import { Text } from "../src/coreui-components";
+
+const Title = styled.h1`
+  font-size: 1.5em;
+  text-align: center;
+  color: palevioletred;
+`;
+
+// Create a Wrapper component that'll render a <section> tag with some styles
+const Wrapper = styled.section`
+  padding: 4em;
+  background: papayawhip;
+`;
 
 const SendPage: NextPage = () => {
   const connectedWallet = useConnectedWallet();
   const [count, setCount] = useState<number>();
-  const [updating, setUpdating] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [receiver, setReceiver] = useState("");
+  const [giftMessage, setGiftMessage] = useState("");
 
-  useEffect(() => {
-    const prefetch = async () => {
-      if (connectedWallet) {
-        setCount((await query.getCount(connectedWallet)).count);
+  const onClickSendGift = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setUpdating(true);
+    const response = await execute.sendGift({
+      amount,
+      receiver,
+      gift_msg: giftMessage,
+    })(connectedWallet);
+
+    if (response.logs) {
+      const giftId = response.logs[0].events
+        .find((event) => event.type === "from_contract")
+        ?.attributes.find((attribute) => attribute.key === "gift_id")?.value;
+
+      if (giftId) {
+        alert(`Your gift id is: ${giftId}`);
       }
-      setUpdating(false);
-    };
-    prefetch();
-  }, [connectedWallet]);
-
-  const onClickIncrement = async () => {
-    setUpdating(true);
-    await execute.increment(connectedWallet);
-    setCount((await query.getCount(connectedWallet)).count);
+    }
     setUpdating(false);
   };
-
-  const onClickReset = async () => {
-    setUpdating(true);
-    await execute.reset(connectedWallet, 0);
-    setCount((await query.getCount(connectedWallet)).count);
-    setUpdating(false);
-  };
-
-  const Title = styled.h1`
-    font-size: 1.5em;
-    text-align: center;
-    color: palevioletred;
-  `;
-
-  // Create a Wrapper component that'll render a <section> tag with some styles
-  const Wrapper = styled.section`
-    padding: 4em;
-    background: papayawhip;
-  `;
 
   // Use Title and Wrapper like any other React component – except they're styled!
   return (
     <Wrapper>
-      <div style={{ display: "inline" }}>
-        COUNT: {count} {updating ? "(updating . . .)" : ""}
-        <button onClick={onClickIncrement} type="button">
-          {" "}
-          +{" "}
-        </button>
-      </div>
+      {updating && (
+        <div>
+          <Text>Submitting</Text>
+        </div>
+      )}
+
+      <form onSubmit={onClickSendGift}>
+        <label>
+          Amount:
+          <input
+            value={amount}
+            onChange={(e) => {
+              setAmount(e.target.value);
+            }}
+            type="number"
+          />
+        </label>
+        <div />
+        <label>
+          Receiver:
+          <input
+            value={receiver}
+            onChange={(e) => {
+              setReceiver(e.target.value);
+            }}
+          />
+        </label>
+        <div />
+        <label>
+          Message:
+          <textarea
+            value={giftMessage}
+            onChange={(e) => {
+              setGiftMessage(e.target.value);
+            }}
+          />
+        </label>
+        <div />
+        <input type="submit" value="Submit" />
+      </form>
     </Wrapper>
   );
 };

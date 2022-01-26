@@ -1,4 +1,4 @@
-import { MsgExecuteContract, Fee } from "@terra-money/terra.js";
+import { MsgExecuteContract, Fee, Coins } from "@terra-money/terra.js";
 import { ConnectedWallet } from "@terra-money/wallet-provider";
 import { contractAdress } from "./address";
 
@@ -11,7 +11,7 @@ const until = Date.now() + 1000 * 60 * 60;
 const untilInterval = Date.now() + 1000 * 60;
 
 const _exec =
-  (msg: any, fee = new Fee(200000, { uluna: 10000 })) =>
+  (msg: any, coins: Coins.Input, fee = new Fee(200000, { uusd: 30000 })) =>
   async (wallet?: ConnectedWallet) => {
     if (!wallet) {
       throw new Error("Wallet not connected");
@@ -23,7 +23,8 @@ const _exec =
         new MsgExecuteContract(
           wallet.walletAddress,
           contractAdress(wallet),
-          msg
+          msg,
+          coins
         ),
       ],
     });
@@ -47,7 +48,11 @@ const _exec =
 
 // ==== execute contract ====
 
-export const increment = _exec({ increment: {} });
+interface SendGiftProps {
+  amount: string;
+  receiver: string;
+  gift_msg: string;
+}
 
-export const reset = async (wallet, count) =>
-  _exec({ reset: { count } })(wallet);
+export const sendGift = (props: SendGiftProps) =>
+  _exec({ send_gift: props }, { uusd: props.amount });

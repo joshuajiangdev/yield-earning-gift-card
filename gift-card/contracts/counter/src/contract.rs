@@ -7,9 +7,7 @@ use cw2::set_contract_version;
 use crate::anchor;
 use crate::config;
 use crate::error::ContractError;
-use crate::msg::{
-    ExecuteMsg, GetGiftDetailResponse, GreetingResponse, InstantiateMsg, MigrateMsg, QueryMsg,
-};
+use crate::msg::{ExecuteMsg, GetGiftDetailResponse, InstantiateMsg, MigrateMsg, QueryMsg};
 
 use crate::state::{GiftDetail, State, STATE};
 use cosmwasm_bignumber::Uint256;
@@ -50,13 +48,18 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
+    let received: Uint256 = info
+        .funds
+        .iter()
+        .find(|c| c.denom == "uusd")
+        .map(|c| Uint256::from(c.amount))
+        .unwrap_or_else(Uint256::zero);
+
     match msg {
         ExecuteMsg::Deposit { amount } => try_deposit(deps, info, amount),
-        ExecuteMsg::SendGift {
-            receiver,
-            amount,
-            gift_msg,
-        } => try_send_gift(deps, info.sender, receiver, amount, gift_msg),
+        ExecuteMsg::SendGift { receiver, gift_msg } => {
+            try_send_gift(deps, info.sender, receiver, received, gift_msg)
+        }
     }
 }
 
@@ -144,12 +147,6 @@ fn query_gift_detail(deps: Deps, gift_id: u32) -> StdResult<GetGiftDetailRespons
     }
 }
 
-fn query_greeting() -> StdResult<GreetingResponse> {
-    Ok(GreetingResponse {
-        greeting: String::from("hello miami"),
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -169,7 +166,6 @@ mod tests {
         let info = mock_info("anyone", &coins(2, "token"));
         let msg = ExecuteMsg::SendGift {
             receiver: Addr::unchecked(receiver),
-            amount: Uint256::from(amount),
             gift_msg: "some message".to_string(),
         };
         let _res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
