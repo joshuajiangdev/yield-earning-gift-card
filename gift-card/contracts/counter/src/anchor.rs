@@ -1,6 +1,6 @@
-// use cosmwasm_bignumber::{Decimal256, Uint256};
+use cosmwasm_bignumber::{Decimal256, Uint256};
 use cosmwasm_std::*;
-// use cw20::Cw20ExecuteMsg;
+use cw20::Cw20ExecuteMsg;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -52,6 +52,26 @@ pub enum Cw20HookMsg {
     RedeemStable {},
 }
 
+// We define a custom struct for each query response
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct EpochStateResponse {
+    pub exchange_rate: Decimal256,
+    pub aterra_supply: Uint256,
+}
+
+pub fn epoch_state(deps: Deps, market: &CanonicalAddr) -> StdResult<EpochStateResponse> {
+    let epoch_state: EpochStateResponse =
+        deps.querier.query(&QueryRequest::Wasm(WasmQuery::Smart {
+            contract_addr: deps.api.addr_humanize(market).unwrap().to_string(),
+            msg: to_binary(&QueryMsg::EpochState {
+                block_height: None,
+                distributed_interest: None,
+            })?,
+        }))?;
+
+    Ok(epoch_state)
+}
+
 pub fn deposit_stable_msg(
     deps: Deps,
     market: &CanonicalAddr,
@@ -68,20 +88,19 @@ pub fn deposit_stable_msg(
     })])
 }
 
-// TODO: redeem
-// pub fn redeem_stable_msg(
-//     deps: Deps,
-//     market: &CanonicalAddr,
-//     token: &CanonicalAddr,
-//     amount: Uint128,
-// ) -> StdResult<Vec<CosmosMsg>> {
-//     Ok(vec![CosmosMsg::Wasm(WasmMsg::Execute {
-//         contract_addr: deps.api.addr_humanize(token).unwrap().to_string(),
-//         msg: to_binary(&Cw20ExecuteMsg::Send {
-//             contract: deps.api.addr_humanize(market).unwrap().to_string(),
-//             amount,
-//             msg: to_binary(&Cw20HookMsg::RedeemStable {}).unwrap(),
-//         })?,
-//         funds: vec![],
-//     })])
-// }
+pub fn redeem_stable_msg(
+    deps: Deps,
+    market: &CanonicalAddr,
+    token: &CanonicalAddr,
+    amount: Uint128,
+) -> StdResult<Vec<CosmosMsg>> {
+    Ok(vec![CosmosMsg::Wasm(WasmMsg::Execute {
+        contract_addr: deps.api.addr_humanize(token).unwrap().to_string(),
+        msg: to_binary(&Cw20ExecuteMsg::Send {
+            contract: deps.api.addr_humanize(market).unwrap().to_string(),
+            amount,
+            msg: to_binary(&Cw20HookMsg::RedeemStable {}).unwrap(),
+        })?,
+        funds: vec![],
+    })])
+}

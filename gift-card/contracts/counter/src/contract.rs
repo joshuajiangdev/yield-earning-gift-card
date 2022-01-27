@@ -15,6 +15,7 @@ use crate::msg::{ExecuteMsg, GetGiftDetailResponse, InstantiateMsg, MigrateMsg, 
 use crate::state::{GiftDetail, State, STATE};
 use cosmwasm_bignumber::Uint256;
 use std::convert::TryFrom;
+use std::ops::Div;
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:counter";
@@ -64,6 +65,7 @@ pub fn try_claim_gift(
     claimer: Addr,
     gift_id: u32,
 ) -> Result<Response, ContractError> {
+    let mut amount = Uint256::zero();
     let result = STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
         let gift_detail = state.giftcards.get_mut(usize::try_from(gift_id).unwrap());
 
@@ -79,7 +81,7 @@ pub fn try_claim_gift(
                     "Gift is already claimed",
                 )));
             }
-
+            amount = gift_detail.amount;
             gift_detail.is_claimed = true;
 
             Ok(state)
@@ -89,20 +91,39 @@ pub fn try_claim_gift(
             )));
         }
     });
-
+    let anchor_market_address_str = "terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal";
+    let anchor_market_address = deps
+        .api
+        .addr_canonicalize(anchor_market_address_str)
+        .unwrap();
+    let epoch_state = anchor::epoch_state(deps.as_ref(), &anchor_market_address)?;
+    let market_redeem_amount = Uint256::from(amount).div(epoch_state.exchange_rate);
+    let anchor_ust_address = "terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl";
     match result {
         Ok(state) => {
             let gift_detail = state.giftcards.get(usize::try_from(gift_id).unwrap());
 
             if let Some(gift_detail) = gift_detail {
-                let amount = gift_detail.amount;
-                return Ok(Response::new().add_message(CosmosMsg::Bank(BankMsg::Send {
-                    to_address: claimer.to_string(),
-                    amount: vec![Coin {
-                        denom: "uusd".to_string(),
-                        amount: amount.into(),
-                    }],
-                })));
+                // withdraw from anchor and send from our contract to user
+
+                return Ok(Response::new()
+                    .add_messages(anchor::redeem_stable_msg(
+                        deps.as_ref(),
+                        &anchor_market_address,
+                        &deps.api.addr_canonicalize(anchor_ust_address).unwrap(),
+                        market_redeem_amount.into(),
+                    )?)
+                    .add_message(CosmosMsg::Bank(BankMsg::Send {
+                        to_address: claimer.to_string(),
+                        amount: vec![Coin {
+                            denom: "uusd".to_string(),
+                            amount: amount.into(),
+                        }],
+                    }))
+                    .add_attribute("action", "redeem")
+                    .add_attribute("claimer", claimer)
+                    .add_attribute("amount", amount.to_string())
+                    .add_attribute("market_redeem_amount", market_redeem_amount));
             } else {
                 return Err(ContractError::Std(StdError::generic_err(
                     "Cannot find detail",
