@@ -7,12 +7,11 @@
       }
     }
   },
-
   "localterra": {
     "counter": {
-      "codeId": "15",
+      "codeId": "16",
       "contractAddresses": {
-        "default": "terra1wgnpjk9s5dgyashvf4xl9hy3kzkfqynj8vlgyh"
+        "default": "terra1x4vt5xndndzq664rxtqrrqu9py9qndp3nw95lu"
       }
     }
   }

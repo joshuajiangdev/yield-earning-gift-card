@@ -11,7 +11,7 @@ const until = Date.now() + 1000 * 60 * 60;
 const untilInterval = Date.now() + 1000 * 60;
 
 const _exec =
-  (msg: any, coins: Coins.Input, fee = new Fee(200000, { uusd: 30000 })) =>
+  (msg: any, coins: Coins.Input, fee = new Fee(1000000, { uusd: 200000 })) =>
   async (wallet?: ConnectedWallet) => {
     if (!wallet) {
       throw new Error("Wallet not connected");

@@ -92,40 +92,21 @@ pub fn try_send_gift(
         .map(|c| Uint256::from(c.amount))
         .unwrap_or_else(Uint256::zero);
 
+    let anchor_market_address = "terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal";
+
     Ok(Response::new()
         .add_attribute("method", "try_send_gift")
         .add_attribute(
             "gift_id",
             (STATE.load(deps.storage)?.giftcards.len() - 1).to_string(),
         )
-        .add_attribute("funds_received", funds_received))
-}
-
-pub fn try_deposit(deps: DepsMut, info: MessageInfo) -> Result<Response, ContractError> {
-    // deposit funds into anchor for a given wallet
-    let config = config::read(deps.storage).unwrap();
-
-    // check deposit
-    let received: Uint256 = info
-        .funds
-        .iter()
-        .find(|c| c.denom == config.stable_denom)
-        .map(|c| Uint256::from(c.amount))
-        .unwrap_or_else(Uint256::zero);
-
-    let market_address = "terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal";
-    // NOTE: you can add any key/value pairs to the response as a way of logging
-    // print something out first - the amount to be deposited and the sender
-    Ok(Response::new()
+        .add_attribute("funds_received", funds_received)
         .add_messages(anchor::deposit_stable_msg(
             deps.as_ref(),
-            &deps.api.addr_canonicalize(market_address).unwrap(),
-            "uusd",
-            received.into(),
-        )?)
-        .add_attribute("method", "try_deposit")
-        .add_attribute("owner", info.sender) // owner is the address of the sender
-        .add_attribute("amount received", received.to_string()))
+            &deps.api.addr_canonicalize(anchor_market_address).unwrap(),
+            &"uusd",
+            funds_received.into(),
+        )?))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

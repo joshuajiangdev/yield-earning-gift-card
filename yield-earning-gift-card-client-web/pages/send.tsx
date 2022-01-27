@@ -36,6 +36,9 @@ const SendPage: NextPage = () => {
       gift_msg: giftMessage,
     })(connectedWallet);
 
+    console.log("response from send_gift: ", response);
+    // TODO: log the transaction URL
+
     if (response.logs) {
       const giftId = response.logs[0].events
         .find((event) => event.type === "from_contract")
