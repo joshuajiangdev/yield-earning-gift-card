@@ -1,6 +1,9 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+use cosmwasm_std::{
+    to_binary, BankMsg, Binary, Coin, CosmosMsg, Deps, DepsMut, Env, MessageInfo, Response,
+    StdResult,
+};
 use cosmwasm_std::{Addr, StdError};
 use cw2::set_contract_version;
 
@@ -52,6 +55,61 @@ pub fn execute(
         ExecuteMsg::SendGift { receiver, gift_msg } => {
             try_send_gift(deps, info, receiver, gift_msg)
         }
+        ExecuteMsg::ClaimGift { gift_id } => try_claim_gift(deps, info.sender, gift_id),
+    }
+}
+
+pub fn try_claim_gift(
+    deps: DepsMut,
+    claimer: Addr,
+    gift_id: u32,
+) -> Result<Response, ContractError> {
+    let result = STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
+        let gift_detail = state.giftcards.get_mut(usize::try_from(gift_id).unwrap());
+
+        if let Some(gift_detail) = gift_detail {
+            if !gift_detail.receiver.eq(&claimer) {
+                return Err(ContractError::Std(StdError::generic_err(
+                    "Only receiver could claim the gift",
+                )));
+            }
+
+            if gift_detail.is_claimed {
+                return Err(ContractError::Std(StdError::generic_err(
+                    "Gift is already claimed",
+                )));
+            }
+
+            gift_detail.is_claimed = true;
+
+            Ok(state)
+        } else {
+            return Err(ContractError::Std(StdError::generic_err(
+                "Only receiver could claim the gift",
+            )));
+        }
+    });
+
+    match result {
+        Ok(state) => {
+            let gift_detail = state.giftcards.get(usize::try_from(gift_id).unwrap());
+
+            if let Some(gift_detail) = gift_detail {
+                let amount = gift_detail.amount;
+                return Ok(Response::new().add_message(CosmosMsg::Bank(BankMsg::Send {
+                    to_address: claimer.to_string(),
+                    amount: vec![Coin {
+                        denom: "uusd".to_string(),
+                        amount: amount.into(),
+                    }],
+                })));
+            } else {
+                return Err(ContractError::Std(StdError::generic_err(
+                    "Cannot find detail",
+                )));
+            }
+        }
+        Err(err) => return Err(err),
     }
 }
 
