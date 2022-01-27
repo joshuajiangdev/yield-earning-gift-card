@@ -1,22 +1,9 @@
 import { useConnectedWallet } from "@terra-money/wallet-provider";
 import type { NextPage } from "next";
 import { useState } from "react";
-import styled from "styled-components";
 import * as query from "../src/contract/query";
 import * as execute from "../src/contract/execute";
 import { Button, Text } from "../src/coreui-components";
-
-const Title = styled.h1`
-  font-size: 1.5em;
-  text-align: center;
-  color: palevioletred;
-`;
-
-// Create a Wrapper component that'll render a <section> tag with some styles
-const Wrapper = styled.section`
-  padding: 4em;
-  background: papayawhip;
-`;
 
 const ReceivePage: NextPage = () => {
   const connectedWallet = useConnectedWallet();
@@ -50,7 +37,7 @@ const ReceivePage: NextPage = () => {
 
   // Use Title and Wrapper like any other React component – except they're styled!
   return (
-    <Wrapper>
+    <div>
       <input
         type="number"
         value={giftId}
@@ -78,7 +65,7 @@ const ReceivePage: NextPage = () => {
           Claim
         </Button>
       </div>
-    </Wrapper>
+    </div>
   );
 };
 

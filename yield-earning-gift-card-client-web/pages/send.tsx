@@ -1,34 +1,29 @@
 import type { NextPage } from "next";
-import styled from "styled-components";
-import { FormEvent, FormEventHandler, useEffect, useState } from "react";
+import { useState } from "react";
 import * as execute from "../src/contract/execute";
-import * as query from "../src/contract/query";
-import { useConnectedWallet, useWallet } from "@terra-money/wallet-provider";
-import { Text } from "../src/coreui-components";
-
-const Title = styled.h1`
-  font-size: 1.5em;
-  text-align: center;
-  color: palevioletred;
-`;
-
-// Create a Wrapper component that'll render a <section> tag with some styles
-const Wrapper = styled.section`
-  padding: 4em;
-  background: papayawhip;
-`;
+import { useConnectedWallet } from "@terra-money/wallet-provider";
+import { useKeyPad } from "../src/hooks/useKeyPad";
+import { Dialog, DialogTitle, TextField, Typography } from "@mui/material";
+import { Spacer } from "../src/coreui-components/Spacer";
+import { SpaceUnit } from "../src/constants/design";
+import { AppWrapper } from "../src/components/AppWrapper";
+import { LoadingButton } from "@mui/lab";
 
 const SendPage: NextPage = () => {
   const connectedWallet = useConnectedWallet();
-  const [count, setCount] = useState<number>();
   const [updating, setUpdating] = useState(false);
-  const [amount, setAmount] = useState("");
   const [receiver, setReceiver] = useState("");
   const [giftMessage, setGiftMessage] = useState("");
 
-  const onClickSendGift = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const [giftId, setGiftId] = useState<string | undefined>(undefined);
 
+  const [amount, keyPadComponent] = useKeyPad();
+
+  const handleCloseDialog = () => {
+    setGiftId(undefined);
+  };
+
+  const onClickSendGift = async () => {
     setUpdating(true);
     const response = await execute.sendGift({
       amount,
@@ -36,65 +31,67 @@ const SendPage: NextPage = () => {
       gift_msg: giftMessage,
     })(connectedWallet);
 
-    console.log("response from send_gift: ", response);
-    // TODO: log the transaction URL
-
     if (response.logs) {
       const giftId = response.logs[0].events
         .find((event) => event.type === "from_contract")
         ?.attributes.find((attribute) => attribute.key === "gift_id")?.value;
 
       if (giftId) {
-        alert(`Your gift id is: ${giftId}`);
+        setGiftId(giftId);
       }
     }
     setUpdating(false);
   };
 
-  // Use Title and Wrapper like any other React component – except they're styled!
   return (
-    <Wrapper>
-      {updating && (
-        <div>
-          <Text>Submitting</Text>
-        </div>
-      )}
+    <>
+      <Dialog onClose={handleCloseDialog} open={!!giftId}>
+        <DialogTitle>Your gift card ID: {giftId}</DialogTitle>
+      </Dialog>
+      <AppWrapper>
+        <Typography style={{ textAlign: "center" }} variant="h1">
+          {amount}
+        </Typography>
+        <Typography style={{ textAlign: "center" }} variant="h6">
+          UST
+        </Typography>
+        <Spacer space={SpaceUnit.four} vertical />
+        {keyPadComponent}
 
-      <form onSubmit={onClickSendGift}>
-        <label>
-          Amount:
-          <input
-            value={amount}
-            onChange={(e) => {
-              setAmount(e.target.value);
-            }}
-            type="number"
-          />
-        </label>
-        <div />
-        <label>
-          Receiver:
-          <input
-            value={receiver}
-            onChange={(e) => {
-              setReceiver(e.target.value);
-            }}
-          />
-        </label>
-        <div />
-        <label>
-          Message:
-          <textarea
-            value={giftMessage}
-            onChange={(e) => {
-              setGiftMessage(e.target.value);
-            }}
-          />
-        </label>
-        <div />
-        <input type="submit" value="Submit" />
-      </form>
-    </Wrapper>
+        <Typography variant="h5">Receiver address</Typography>
+        <Spacer space={SpaceUnit.one} vertical />
+        <TextField
+          id="addr"
+          placeholder="terraXXXXX"
+          variant="outlined"
+          fullWidth
+          value={receiver}
+          onChange={(e) => setReceiver(e.target.value)}
+        />
+        <Spacer space={SpaceUnit.three} vertical />
+
+        <Typography variant="h5">Gift message</Typography>
+        <Spacer space={SpaceUnit.one} vertical />
+        <TextField
+          id="msg"
+          placeholder="This is a gift for you."
+          variant="outlined"
+          fullWidth
+          value={giftMessage}
+          onChange={(e) => setGiftMessage(e.target.value)}
+        />
+        <Spacer space={SpaceUnit.three} vertical />
+        <LoadingButton
+          variant="contained"
+          disabled={!connectedWallet}
+          loading={updating}
+          onClick={onClickSendGift}
+          style={{ width: 200, alignSelf: "center" }}
+        >
+          Send
+        </LoadingButton>
+      </AppWrapper>
+    </>
   );
 };
 

@@ -13,7 +13,6 @@ const untilInterval = Date.now() + 1000 * 60;
 const _exec =
   (msg: any, coins?: Coins.Input, fee = new Fee(1000000, { uusd: 200000 })) =>
   async (wallet?: ConnectedWallet) => {
-    console.log("executing");
     if (!wallet) {
       throw new Error("Wallet not connected");
     }
@@ -56,7 +55,7 @@ interface SendGiftProps {
 }
 
 export const sendGift = (props: SendGiftProps) =>
-  _exec({ send_gift: props }, { uusd: props.amount });
+  _exec({ send_gift: props }, { uusd: props.amount + "000000" });
 
 interface ClaimGiftProps {
   gift_id: number;
