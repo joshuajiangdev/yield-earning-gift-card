@@ -29,5 +29,6 @@ pub struct GetGiftDetailResponse {
     pub gift_id: u32,
     pub amount: Uint256,
     pub msg: String,
+    pub sender: Addr,
     pub receiver: Addr,
 }

@@ -197,12 +197,14 @@ fn query_gift_detail(deps: Deps, gift_id: u32) -> StdResult<GetGiftDetailRespons
             msg: "Invalid gift".to_string(),
         }),
         Some(GiftDetail {
+            sender,
             receiver,
             amount,
             msg,
             ..
         }) => Ok(GetGiftDetailResponse {
             gift_id: gift_id,
+            sender: sender.clone(),
             receiver: receiver.clone(),
             amount: amount.clone(),
             msg: msg.clone(),

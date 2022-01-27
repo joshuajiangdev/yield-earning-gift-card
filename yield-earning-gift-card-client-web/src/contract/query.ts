@@ -8,6 +8,7 @@ export interface GiftDetail {
   amount: "1000";
   msg: "hello";
   receiver: "terra1hfue3s0nwu5cj2ev8ztv2ylu2eduut8lsdl270";
+  sender: "terra1hfue3s0nwu5cj2ev8ztv2ylu2eduut8lsdl270"
 }
 
 export const getGiftDetail = async (

@@ -78,6 +78,9 @@ const ReceivePage: NextPage = () => {
       >
         <Box sx={style}>
           <Typography textAlign="center" variant="subtitle1">
+            Sender: {currentGiftDetail?.sender ?? ""}
+          </Typography>
+          <Typography textAlign="center" variant="subtitle1">
             Gift amount:{" "}
             {Number.parseInt(currentGiftDetail?.amount ?? "0") / 1000000.0} UST
           </Typography>
