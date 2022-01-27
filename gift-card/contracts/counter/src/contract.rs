@@ -48,16 +48,9 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    let received: Uint256 = info
-        .funds
-        .iter()
-        .find(|c| c.denom == "uusd")
-        .map(|c| Uint256::from(c.amount))
-        .unwrap_or_else(Uint256::zero);
-
     match msg {
         ExecuteMsg::SendGift { receiver, gift_msg } => {
-            try_send_gift(deps, info, receiver, received, gift_msg)
+            try_send_gift(deps, info, receiver, gift_msg)
         }
     }
 }
@@ -66,14 +59,22 @@ pub fn try_send_gift(
     deps: DepsMut,
     info: MessageInfo,
     receiver: Addr,
-    amount: Uint256,
     msg: String,
 ) -> Result<Response, ContractError> {
     let sender = info.sender;
+
+    // extract deposited funds
+    let amount: Uint256 = info
+        .funds
+        .iter()
+        .find(|c| c.denom == "uusd")
+        .map(|c| Uint256::from(c.amount))
+        .unwrap_or_else(Uint256::zero);
+
     STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
         let gift_card = GiftDetail {
-            sender,
             receiver,
+            sender,
             amount,
             msg,
             is_claimed: false,
@@ -84,14 +85,6 @@ pub fn try_send_gift(
         Ok(state)
     })?;
 
-    // extract deposited funds
-    let funds_received: Uint256 = info
-        .funds
-        .iter()
-        .find(|c| c.denom == "uusd")
-        .map(|c| Uint256::from(c.amount))
-        .unwrap_or_else(Uint256::zero);
-
     let anchor_market_address = "terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal";
 
     Ok(Response::new()
@@ -100,12 +93,12 @@ pub fn try_send_gift(
             "gift_id",
             (STATE.load(deps.storage)?.giftcards.len() - 1).to_string(),
         )
-        .add_attribute("funds_received", funds_received)
+        .add_attribute("funds_received", amount)
         .add_messages(anchor::deposit_stable_msg(
             deps.as_ref(),
             &deps.api.addr_canonicalize(anchor_market_address).unwrap(),
             &"uusd",
-            funds_received.into(),
+            amount.into(),
         )?))
 }
 
