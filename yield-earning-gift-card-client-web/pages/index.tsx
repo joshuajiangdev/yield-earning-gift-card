@@ -5,23 +5,43 @@ import { useWallet, WalletStatus } from "@terra-money/wallet-provider";
 import { Typography, Button } from "@mui/material";
 import { CardGiftcard } from "@mui/icons-material";
 import FileDownloadDoneIcon from "@mui/icons-material/FileDownloadDone";
+import Image from "next/image";
+import Footer from "../src/components/Footer";
 const Home: NextPage = () => {
   const { status, availableConnectTypes, connect, disconnect } = useWallet();
 
   if (status === WalletStatus.WALLET_NOT_CONNECTED) {
     return (
-      <div>
-        <div>
-          <Text>Please conntect your wallet first.</Text>
+      <div style={{ textAlign: "center" }}>
+        <Typography
+          style={{ textAlign: "center", marginTop: "10%" }}
+          variant="h2"
+        >
+          <Image
+            src="/moon-dynamic-color.png"
+            alt="me"
+            width="100"
+            height="100"
+          ></Image>
+          Terragram
+        </Typography>
+        <Typography
+          style={{ textAlign: "center", marginTop: "3%" }}
+          variant="h5"
+        >
+          UST gift cards that earn yield while not spent.{" "}
+        </Typography>
+        <div className="connectButtons" style={{ marginTop: "3%" }}>
+          {availableConnectTypes.map((connectType) => (
+            <Button
+              key={"connect-" + connectType}
+              onClick={() => connect(connectType)}
+            >
+              Connect {connectType}
+            </Button>
+          ))}
         </div>
-        {availableConnectTypes.map((connectType) => (
-          <Button
-            key={"connect-" + connectType}
-            onClick={() => connect(connectType)}
-          >
-            Connect {connectType}
-          </Button>
-        ))}
+        <Footer />
       </div>
     );
   }
@@ -32,6 +52,12 @@ const Home: NextPage = () => {
         style={{ textAlign: "center", marginTop: "10%" }}
         variant="h2"
       >
+        <Image
+          src="/moon-dynamic-color.png"
+          alt="me"
+          width="100"
+          height="100"
+        ></Image>
         Terragram
       </Typography>
 
@@ -59,16 +85,8 @@ const Home: NextPage = () => {
             </Link>
           </Button>
         </div>
-
-        <p>
-          {" "}
-          Built with ♥️ on{" "}
-          <img
-            src="https://www.terra.cards/wp-content/uploads/2021/07/terra-small-1.png"
-            style={{ width: "60px" }}
-          ></img>
-        </p>
       </div>
+      <Footer />
     </>
   );
 };
