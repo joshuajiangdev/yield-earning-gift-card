@@ -9,6 +9,7 @@ export interface GiftDetail {
   msg: string;
   receiver: string;
   sender: string
+  is_claimed: boolean;
 }
 
 export const getGiftDetail = async (

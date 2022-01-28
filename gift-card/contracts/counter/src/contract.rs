@@ -201,13 +201,14 @@ fn query_gift_detail(deps: Deps, gift_id: u32) -> StdResult<GetGiftDetailRespons
             receiver,
             amount,
             msg,
-            ..
+            is_claimed,
         }) => Ok(GetGiftDetailResponse {
             gift_id: gift_id,
             sender: sender.clone(),
             receiver: receiver.clone(),
             amount: amount.clone(),
             msg: msg.clone(),
+            is_claimed: is_claimed.clone(),
         }),
     }
 }

@@ -31,4 +31,5 @@ pub struct GetGiftDetailResponse {
     pub msg: String,
     pub sender: Addr,
     pub receiver: Addr,
+    pub is_claimed: bool,
 }
