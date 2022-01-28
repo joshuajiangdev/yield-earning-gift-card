@@ -29,8 +29,17 @@ const Home: NextPage = () => {
           style={{ textAlign: "center", marginTop: "3%" }}
           variant="h5"
         >
-          UST gift cards that earn yield while not spent.{" "}
+          UST gift cards that earn yield on idle funds{" "}
         </Typography>
+        <p>
+          <a
+            href="https://www.youtube.com/watch?v=QeCqf0JX-sw"
+            target="_blank"
+            style={{ color: "#1976d2" }}
+          >
+            Watch demo
+          </a>{" "}
+        </p>
         <div className="connectButtons" style={{ marginTop: "3%" }}>
           {availableConnectTypes.map((connectType) => (
             <Button
@@ -62,9 +71,19 @@ const Home: NextPage = () => {
       </Typography>
 
       <Typography style={{ textAlign: "center", marginTop: "3%" }} variant="h5">
-        UST gift cards that earn yield while not spent.{" "}
+        UST gift cards that earn yield on idle funds{" "}
       </Typography>
+
       <div style={{ textAlign: "center" }}>
+        <p>
+          <a
+            href="https://www.youtube.com/watch?v=QeCqf0JX-sw"
+            target="_blank"
+            style={{ color: "#1976d2" }}
+          >
+            Watch demo
+          </a>{" "}
+        </p>
         <div style={{ padding: "5%" }}>
           <Button variant="contained">
             <Link href="/send">
