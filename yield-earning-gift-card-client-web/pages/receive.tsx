@@ -78,36 +78,6 @@ const ReceivePage: NextPage = () => {
         </LoadingButton>
       </AppWrapper>
     </>
-
-    // <div>
-    //   <input
-    //     type="number"
-    //     value={giftId}
-    //     onChange={(e) => {
-    //       setGiftId(e.target.value);
-    //     }}
-    //   />
-    //   <Button onClick={loadGiftDetail}>Load gift</Button>
-    //   <div>
-    //     <Text>To: {currentGiftDetail?.receiver}</Text>
-    //   </div>
-    //   <div>
-    //     <Text>Amount: {currentGiftDetail?.amount} uusd</Text>
-    //   </div>
-    //   <div>
-    //     <Text>Message: {currentGiftDetail?.msg}</Text>
-    //   </div>
-    //   <div>
-    //     <Button
-    //       disabled={
-    //         connectedWallet?.walletAddress !== currentGiftDetail?.receiver
-    //       }
-    //       onClick={claimGift}
-    //     >
-    //       Claim
-    //     </Button>
-    //   </div>
-    // </div>
   );
 };
 
