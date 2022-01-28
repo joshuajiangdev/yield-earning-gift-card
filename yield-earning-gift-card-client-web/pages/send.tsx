@@ -16,7 +16,7 @@ const SendPage: NextPage = () => {
   const [giftMessage, setGiftMessage] = useState("");
 
   const [giftId, setGiftId] = useState<string | undefined>(undefined);
-
+  const [txHash, setTxHash] = useState<string | undefined>(undefined);
   const [amount, keyPadComponent] = useKeyPad();
 
   const handleCloseDialog = () => {
@@ -40,6 +40,15 @@ const SendPage: NextPage = () => {
         if (giftId) {
           setGiftId(giftId);
         }
+
+        const txHash = response.txhash;
+        if (txHash) {
+          setTxHash(txHash);
+        }
+
+        if (txHash) {
+          setTxHash(txHash);
+        }
       }
     } finally {
       setUpdating(false);
@@ -50,6 +59,7 @@ const SendPage: NextPage = () => {
     <>
       <Dialog onClose={handleCloseDialog} open={!!giftId}>
         <DialogTitle>Your gift card ID: {giftId}</DialogTitle>
+        <DialogTitle>Tx Hash: {txHash}</DialogTitle>
       </Dialog>
       <AppWrapper>
         <Typography style={{ textAlign: "center" }} variant="h1">
