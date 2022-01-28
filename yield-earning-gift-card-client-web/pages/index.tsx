@@ -2,13 +2,7 @@ import Link from "next/link";
 import type { NextPage } from "next";
 import { Text } from "../src/coreui-components";
 import { useWallet, WalletStatus } from "@terra-money/wallet-provider";
-import {
-  Dialog,
-  DialogTitle,
-  TextField,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Typography, Button } from "@mui/material";
 import { CardGiftcard } from "@mui/icons-material";
 import FileDownloadDoneIcon from "@mui/icons-material/FileDownloadDone";
 const Home: NextPage = () => {
