@@ -25,22 +25,25 @@ const SendPage: NextPage = () => {
 
   const onClickSendGift = async () => {
     setUpdating(true);
-    const response = await execute.sendGift({
-      amount,
-      receiver,
-      gift_msg: giftMessage,
-    })(connectedWallet);
+    try {
+      const response = await execute.sendGift({
+        amount,
+        receiver,
+        gift_msg: giftMessage,
+      })(connectedWallet);
 
-    if (response.logs) {
-      const giftId = response.logs[0].events
-        .find((event) => event.type === "from_contract")
-        ?.attributes.find((attribute) => attribute.key === "gift_id")?.value;
+      if (response.logs) {
+        const giftId = response.logs[0].events
+          .find((event) => event.type === "from_contract")
+          ?.attributes.find((attribute) => attribute.key === "gift_id")?.value;
 
-      if (giftId) {
-        setGiftId(giftId);
+        if (giftId) {
+          setGiftId(giftId);
+        }
       }
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   return (

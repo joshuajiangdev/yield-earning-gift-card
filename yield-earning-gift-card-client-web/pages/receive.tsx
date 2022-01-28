@@ -2,14 +2,13 @@ import { useConnectedWallet } from "@terra-money/wallet-provider";
 import type { NextPage } from "next";
 import { useState } from "react";
 import * as query from "../src/contract/query";
-import * as execute from "../src/contract/execute";
-import { Button, Text } from "../src/coreui-components";
 import { AppWrapper } from "../src/components/AppWrapper";
-import { Box, Modal, TextField, Typography } from "@mui/material";
+import { Modal, TextField, Typography } from "@mui/material";
 import { Spacer } from "../src/coreui-components/Spacer";
 import { SpaceUnit } from "../src/constants/design";
 import { LoadingButton } from "@mui/lab";
 import { ReceivedModal } from "../src/components/ReceivedModal";
+import JSConfetti from "js-confetti";
 
 const ReceivePage: NextPage = () => {
   const connectedWallet = useConnectedWallet();
@@ -47,7 +46,12 @@ const ReceivePage: NextPage = () => {
           <ReceivedModal
             connectedWallet={connectedWallet}
             currentGiftDetail={currentGiftDetail}
-            dismissModal={() => setCurrentGiftDetail(undefined)}
+            dismissModal={() => {
+              setCurrentGiftDetail(undefined);
+              const jsConfetti = new JSConfetti();
+
+              jsConfetti.addConfetti();
+            }}
           />
         ) : (
           <div />
