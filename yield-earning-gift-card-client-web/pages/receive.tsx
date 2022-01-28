@@ -3,7 +3,13 @@ import type { NextPage } from "next";
 import { useState } from "react";
 import * as query from "../src/contract/query";
 import { AppWrapper } from "../src/components/AppWrapper";
-import { Modal, TextField, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  Modal,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Spacer } from "../src/coreui-components/Spacer";
 import { SpaceUnit } from "../src/constants/design";
 import { LoadingButton } from "@mui/lab";
@@ -16,6 +22,8 @@ const ReceivePage: NextPage = () => {
   const [giftId, setGiftId] = useState<string>("");
   const [currentGiftDetail, setCurrentGiftDetail] =
     useState<query.GiftDetail>();
+
+  const [dialogMessage, setDialogMessage] = useState<string>();
 
   const loadGiftDetail = async () => {
     if (connectedWallet) {
@@ -34,8 +42,14 @@ const ReceivePage: NextPage = () => {
 
   const handleClose = () => setCurrentGiftDetail(undefined);
 
+  const handleCloseDialog = () => setDialogMessage(undefined);
+
   return (
     <>
+      <Dialog onClose={handleCloseDialog} open={!!dialogMessage}>
+        <DialogTitle>{dialogMessage}</DialogTitle>
+      </Dialog>
+
       <Modal
         open={!!currentGiftDetail}
         onClose={handleClose}
@@ -48,6 +62,12 @@ const ReceivePage: NextPage = () => {
             currentGiftDetail={currentGiftDetail}
             dismissModal={() => {
               setCurrentGiftDetail(undefined);
+              setDialogMessage(
+                `You have successfully claimed ${
+                  Number.parseInt(currentGiftDetail.amount) / 1000000
+                } UST from ${currentGiftDetail.sender}`
+              );
+
               const jsConfetti = new JSConfetti();
 
               jsConfetti.addConfetti();
