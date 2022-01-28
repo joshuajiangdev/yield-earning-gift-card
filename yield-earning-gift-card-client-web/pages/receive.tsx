@@ -9,19 +9,7 @@ import { Box, Modal, TextField, Typography } from "@mui/material";
 import { Spacer } from "../src/coreui-components/Spacer";
 import { SpaceUnit } from "../src/constants/design";
 import { LoadingButton } from "@mui/lab";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-  display: "flex",
-  flexDirection: "column",
-};
+import { ReceivedModal } from "../src/components/ReceivedModal";
 
 const ReceivePage: NextPage = () => {
   const connectedWallet = useConnectedWallet();
@@ -45,29 +33,8 @@ const ReceivePage: NextPage = () => {
     }
   };
 
-  const claimGift = async () => {
-    if (connectedWallet) {
-      setUpdating(true);
-      try {
-        const response = await execute.claimGift({ gift_id: parseInt(giftId) })(
-          connectedWallet
-        );
-
-        if (response) {
-          setCurrentGiftDetail(undefined);
-        }
-      } finally {
-        setUpdating(false);
-      }
-    }
-  };
-
-  const isReceiver =
-    connectedWallet?.walletAddress === currentGiftDetail?.receiver;
-
   const handleClose = () => setCurrentGiftDetail(undefined);
 
-  // Use Title and Wrapper like any other React component – except they're styled!
   return (
     <>
       <Modal
@@ -76,37 +43,15 @@ const ReceivePage: NextPage = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
-          <Typography textAlign="center" variant="subtitle1">
-            Sender: {currentGiftDetail?.sender ?? ""}
-          </Typography>
-          <Typography textAlign="center" variant="subtitle1">
-            Gift amount:{" "}
-            {Number.parseInt(currentGiftDetail?.amount ?? "0") / 1000000.0} UST
-          </Typography>
-          <Spacer space={SpaceUnit.one} vertical />
-
-          <Typography textAlign="center" variant="subtitle1">
-            Message: {currentGiftDetail?.msg}
-          </Typography>
-
-          <Spacer space={SpaceUnit.three} vertical />
-          {!isReceiver && (
-            <Typography textAlign="center" variant="subtitle2" color="coral">
-              This gift is not for you.
-            </Typography>
-          )}
-
-          <LoadingButton
-            variant="contained"
-            disabled={!isReceiver}
-            loading={updating}
-            onClick={claimGift}
-            style={{ width: 200, alignSelf: "center" }}
-          >
-            Withdraw
-          </LoadingButton>
-        </Box>
+        {currentGiftDetail && connectedWallet ? (
+          <ReceivedModal
+            connectedWallet={connectedWallet}
+            currentGiftDetail={currentGiftDetail}
+            dismissModal={() => setCurrentGiftDetail(undefined)}
+          />
+        ) : (
+          <div />
+        )}
       </Modal>
       <AppWrapper>
         <Spacer space={SpaceUnit.three} vertical />

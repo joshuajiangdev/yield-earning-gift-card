@@ -5,10 +5,10 @@ import { lcd } from "./lcdClient";
 
 export interface GiftDetail {
   gift_id: number;
-  amount: "1000";
-  msg: "hello";
-  receiver: "terra1hfue3s0nwu5cj2ev8ztv2ylu2eduut8lsdl270";
-  sender: "terra1hfue3s0nwu5cj2ev8ztv2ylu2eduut8lsdl270"
+  amount: string;
+  msg: string;
+  receiver: string;
+  sender: string
 }
 
 export const getGiftDetail = async (
