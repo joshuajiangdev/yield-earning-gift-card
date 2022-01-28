@@ -1,14 +1,17 @@
 import React from "react";
+import Image from "next/image";
 
 const Footer = () => (
   <div className="footer" style={{ textAlign: "center" }}>
     <p>
       {" "}
       Built with ♥️ on{" "}
-      <img
+      <Image
         src="https://www.terra.cards/wp-content/uploads/2021/07/terra-small-1.png"
-        style={{ width: "60px" }}
-      ></img>
+        width="60"
+        height="15"
+        alt="terra"
+      ></Image>
     </p>{" "}
   </div>
 );

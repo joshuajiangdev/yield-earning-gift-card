@@ -5,6 +5,9 @@ const nextConfig = {
     config.experiments = { topLevelAwait: true, layers: true };
     return config;
   },
+  images: {
+    domains: ["www.terra.cards"],
+  },
 };
 
 module.exports = nextConfig;

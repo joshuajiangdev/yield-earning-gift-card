@@ -35,6 +35,7 @@ const Home: NextPage = () => {
           <a
             href="https://www.youtube.com/watch?v=QeCqf0JX-sw"
             target="_blank"
+            rel="noreferrer"
             style={{ color: "#1976d2" }}
           >
             Watch demo
@@ -79,6 +80,7 @@ const Home: NextPage = () => {
           <a
             href="https://www.youtube.com/watch?v=QeCqf0JX-sw"
             target="_blank"
+            rel="noreferrer"
             style={{ color: "#1976d2" }}
           >
             Watch demo
