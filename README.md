@@ -63,5 +63,6 @@ Toos we used:
 - Keep track of aUST (anchor UST) which is the token representing a user's deposits in Anchor. This will help us properly track the yield for every money gift
 - Deploy our smart contracts and app to production
 - Investigate the relevance of tools like Pylon for more effectively routing yield to their respective recipients
+- Fiat on- and off-ramp
 - Implement yield splitting among the receiver AND sender, so that the person who makes the gift can also benefit from the beneficiary's saving habits :)
-- Test with real users!
+
